@@ -8,13 +8,24 @@ pipeline {
         pollSCM '* * * * *'
     }
     stages {
+        stage('Install Dependencies') {
+            steps {
+                echo "Installing system dependencies..."
+                sh '''
+                # Update package lists
+                apt-get update
+                
+                # Install Python and pip
+                apt-get install -y python3 python3-pip
+                '''
+            }
+        }
         stage('Setup Python') {
             steps {
                 echo "Setting up Python environment..."
                 sh '''
                 python3 --version
-                python3 -m ensurepip
-                python3 -m pip install --upgrade pip
+                python3 -m pip --version
                 '''
             }
         }
