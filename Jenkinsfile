@@ -1,39 +1,56 @@
 pipeline {
     agent {
         docker {
-            image 'jenkins/jenkins:lts'
-            args '--user root:root'
+            image 'docker:20.10.24-dind' // Alpine-based Docker-in-Docker image
+            args '--privileged -v /var/run/docker.sock:/var/run/docker.sock --user root:root'
         }
     }
-    
+
     triggers {
-        pollSCM '* * * * *'
+        pollSCM('* * * * *')
     }
-    
+
+    environment {
+        PIP_NO_CACHE_DIR = 'off'
+    }
+
     stages {
-        stage('Setup Python') {
+        stage('Install Python & Docker CLI') {
+            steps {
+                echo "Installing Python & Docker CLI..."
+                sh '''
+                apk update
+                apk add python3 py3-pip docker-cli
+                python3 --version
+                pip3 --version
+                docker --version
+                '''
+            }
+        }
+
+        stage('Setup Python Environment') {
             steps {
                 echo "Setting up Python environment..."
                 sh '''
                 python3 --version
-                python3 -m pip --version
+                pip3 --version
                 '''
             }
         }
-        
+
         stage('Build') {
             steps {
-                echo "Building.."
+                echo "Installing dependencies..."
                 sh '''
                 cd myapp
-                python3 -m pip install -r requirements.txt
+                pip3 install -r requirements.txt
                 '''
             }
         }
-        
+
         stage('Test') {
             steps {
-                echo "Testing.."
+                echo "Running tests..."
                 sh '''
                 cd myapp
                 python3 hello.py
@@ -41,13 +58,21 @@ pipeline {
                 '''
             }
         }
-        
+
+        stage('Docker Check (Optional)') {
+            steps {
+                echo "Checking Docker functionality..."
+                sh '''
+                docker pull hello-world
+                docker images
+                '''
+            }
+        }
+
         stage('Deliver') {
             steps {
-                echo 'Deliver....'
-                sh '''
-                echo "doing delivery stuff.."
-                '''
+                echo "Delivering build..."
+                sh 'echo "doing delivery stuff..."'
             }
         }
     }
