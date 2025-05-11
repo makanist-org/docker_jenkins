@@ -1,26 +1,16 @@
 pipeline {
     agent {
         docker {
-            image 'jenkins/agent:latest'
+            image 'python:3.9-slim'
             args '--user root:root'
         }
     }
+    
     triggers {
         pollSCM '* * * * *'
     }
+    
     stages {
-        stage('Install Dependencies') {
-            steps {
-                echo "Installing system dependencies..."
-                sh '''
-                # Update package lists
-                sudo apk update
-                
-                # Install Python and pip
-                sudo apk add --no-cache python3 py3-pip
-                '''
-            }
-        }
         stage('Setup Python') {
             steps {
                 echo "Setting up Python environment..."
@@ -30,6 +20,7 @@ pipeline {
                 '''
             }
         }
+        
         stage('Build') {
             steps {
                 echo "Building.."
@@ -39,6 +30,7 @@ pipeline {
                 '''
             }
         }
+        
         stage('Test') {
             steps {
                 echo "Testing.."
@@ -49,6 +41,7 @@ pipeline {
                 '''
             }
         }
+        
         stage('Deliver') {
             steps {
                 echo 'Deliver....'
