@@ -1,9 +1,9 @@
 pipeline {
-    agent { 
-        node {
-            label 'docker-agent-python'
+    agent {
+node {
+        label 'docker-agent-python'
             }
-      }
+    }
     
     triggers {
         pollSCM '* * * * *'
@@ -14,14 +14,11 @@ pipeline {
             steps {
                 echo "Installing system dependencies..."
                 sh '''
-                # Check if Docker is installed
-                which docker || echo "Docker not found"
-                
                 # Install Python and pip using system package manager
                 if command -v apk; then
-                    apk update && apk add --no-cache python3 py3-pip
+                    sudo apk update && sudo apk add --no-cache python3 py3-pip
                 elif command -v apt-get; then
-                    apt-get update && apt-get install -y python3 python3-pip
+                    sudo apt-get update && sudo apt-get install -y python3 python3-pip
                 fi
                 '''
             }
