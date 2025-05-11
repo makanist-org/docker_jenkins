@@ -2,18 +2,28 @@ pipeline {
     agent { 
         node {
             label 'docker-agent-python'
-            }
-      }
+        }
+    }
     triggers {
         pollSCM '* * * * *'
     }
     stages {
+        stage('Setup Python') {
+            steps {
+                echo "Setting up Python environment..."
+                sh '''
+                python3 --version
+                python3 -m ensurepip
+                python3 -m pip install --upgrade pip
+                '''
+            }
+        }
         stage('Build') {
             steps {
                 echo "Building.."
                 sh '''
                 cd myapp
-                pip3 install -r requirements.txt
+                python3 -m pip install -r requirements.txt
                 '''
             }
         }
