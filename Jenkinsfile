@@ -15,8 +15,8 @@ pipeline {
             steps {
                 echo "Setting up Python environment..."
                 sh '''
-                python3 --version
-                pip3 --version
+                    python3 --version
+                    pip3 --version
                 '''
             }
         }
@@ -25,8 +25,8 @@ pipeline {
             steps {
                 echo "Installing dependencies..."
                 sh '''
-                cd myapp
-                pip3 install -r requirements.txt
+                    cd myapp
+                    pip3 install -r requirements.txt
                 '''
             }
         }
@@ -35,9 +35,9 @@ pipeline {
             steps {
                 echo "Running tests..."
                 sh '''
-                cd myapp
-                python3 hello.py
-                python3 hello.py --name=Brad
+                    cd myapp
+                    python3 hello.py
+                    python3 hello.py --name=Brad
                 '''
             }
         }
