@@ -1,7 +1,8 @@
 pipeline {
     agent { 
-        node {
-            label 'docker-agent-python'
+        docker {
+            image 'jenkins/agent:alpine3.21-jdk21'
+            args '--user root'
         }
     }
     triggers {
@@ -13,10 +14,10 @@ pipeline {
                 echo "Installing system dependencies..."
                 sh '''
                 # Update package lists
-                apt-get update
+                apk update
                 
                 # Install Python and pip
-                apt-get install -y python3 python3-pip
+                apk add --no-cache python3 py3-pip
                 '''
             }
         }
