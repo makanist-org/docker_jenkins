@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'jenkins/jnlp-agent-python'
+            image 'jenkins/jenkins:lts'
             args '--user root:root'
         }
     }
