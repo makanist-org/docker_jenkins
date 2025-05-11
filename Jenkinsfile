@@ -1,23 +1,24 @@
 pipeline {
-    agent { 
-        docker {
-            image 'jenkins/agent:alpine3.21-jdk21'
-            args '--user root'
-        }
-    }
+    agent docker-agent-python
+    
     triggers {
         pollSCM '* * * * *'
     }
+    
     stages {
         stage('Install Dependencies') {
             steps {
                 echo "Installing system dependencies..."
                 sh '''
-                # Update package lists
-                apk update
+                # Check if Docker is installed
+                which docker || echo "Docker not found"
                 
-                # Install Python and pip
-                apk add --no-cache python3 py3-pip
+                # Install Python and pip using system package manager
+                if command -v apk; then
+                    apk update && apk add --no-cache python3 py3-pip
+                elif command -v apt-get; then
+                    apt-get update && apt-get install -y python3 python3-pip
+                fi
                 '''
             }
         }
