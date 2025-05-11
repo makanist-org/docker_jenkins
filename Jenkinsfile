@@ -1,25 +1,23 @@
 pipeline {
     agent {
-node {
-        label 'docker-agent-python'
-            }
+        docker {
+            image 'jenkins/agent:latest'
+            args '--user root:root'
+        }
     }
-    
     triggers {
         pollSCM '* * * * *'
     }
-    
     stages {
         stage('Install Dependencies') {
             steps {
                 echo "Installing system dependencies..."
                 sh '''
-                # Install Python and pip using system package manager
-                if command -v apk; then
-                    sudo apk update && sudo apk add --no-cache python3 py3-pip
-                elif command -v apt-get; then
-                    sudo apt-get update && sudo apt-get install -y python3 python3-pip
-                fi
+                # Update package lists
+                sudo apk update
+                
+                # Install Python and pip
+                sudo apk add --no-cache python3 py3-pip
                 '''
             }
         }
