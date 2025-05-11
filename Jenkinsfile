@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'docker:20.10.24-dind' // Alpine-based Docker-in-Docker image
-            args '--privileged -v /var/run/docker.sock:/var/run/docker.sock --user root:root'
+            image 'python:3.11-slim'
+            args '--user root:root'
         }
     }
 
@@ -10,25 +10,8 @@ pipeline {
         pollSCM('* * * * *')
     }
 
-    environment {
-        PIP_NO_CACHE_DIR = 'off'
-    }
-
     stages {
-        stage('Install Python & Docker CLI') {
-            steps {
-                echo "Installing Python & Docker CLI..."
-                sh '''
-                apk update
-                apk add python3 py3-pip docker-cli
-                python3 --version
-                pip3 --version
-                docker --version
-                '''
-            }
-        }
-
-        stage('Setup Python Environment') {
+        stage('Setup Python') {
             steps {
                 echo "Setting up Python environment..."
                 sh '''
@@ -55,16 +38,6 @@ pipeline {
                 cd myapp
                 python3 hello.py
                 python3 hello.py --name=Brad
-                '''
-            }
-        }
-
-        stage('Docker Check (Optional)') {
-            steps {
-                echo "Checking Docker functionality..."
-                sh '''
-                docker pull hello-world
-                docker images
                 '''
             }
         }
